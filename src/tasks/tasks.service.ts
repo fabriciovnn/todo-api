@@ -7,8 +7,35 @@ import { UpdateTaskDto } from './dtos/update-task.dto';
 export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getAllTasks() {
-    return this.prisma.task.findMany();
+  async getAllTasks({ completed, search, page, limit }) {
+    const skip = (page - 1) * limit;
+    const where: any = {};
+
+    if (completed) {
+      where.completed = completed;
+    }
+
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { descriptions: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    const tasks = await this.prisma.task.findMany({
+      where,
+      skip,
+      take: Number(limit),
+    });
+
+    const total = await this.prisma.task.count({ where });
+
+    return {
+      data: tasks,
+      total,
+      page: Number(page),
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async createTask(data: CreateTaskDto) {
