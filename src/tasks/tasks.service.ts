@@ -6,8 +6,7 @@ import { UpdateTaskDto } from './dtos/update-task.dto';
 @Injectable()
 export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
-
-  async getAllTasks({ completed, search, page, limit }) {
+  async getAllTasks({ completed, search = '', page, limit }) {
     const skip = (page - 1) * limit;
     const where: any = {};
 
