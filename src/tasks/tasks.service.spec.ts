@@ -135,4 +135,59 @@ describe('TasksService', () => {
     expect(result.page).toBe(1);
     expect(result.totalPages).toBe(3);
   });
+
+  it('should create a task', async () => {
+    const newTask = {
+      title: 'Test Task',
+      description: 'This is a test task',
+      completed: false,
+    };
+
+    const createdTask = await service.createTask(newTask);
+
+    expect(createdTask).toHaveProperty('id');
+    expect(createdTask.title).toBe(newTask.title);
+  });
+
+  it('should get a task by ID', async () => {
+    const newTask = await service.createTask({
+      title: 'Test Task',
+      description: 'This is a test task',
+      completed: false,
+    });
+
+    const foundTask = await service.getTaskById(newTask.id);
+
+    expect(foundTask).toBeDefined();
+    expect(foundTask.id).toBe(newTask.id);
+  });
+
+  it('should update a task', async () => {
+    const newTask = await service.createTask({
+      title: 'Test task',
+      description: 'This is a test task',
+      completed: false,
+    });
+
+    const updatedTask = await service.updateTask(newTask.id, {
+      title: 'Updated Task',
+      completed: true,
+    });
+
+    expect(updatedTask).toBeDefined();
+    expect(updatedTask.title).toBe('Updated Task');
+    expect(updatedTask.completed).toBe(true);
+  });
+
+  it('should delete a task', async () => {
+    const newTask = await service.createTask({
+      title: 'Test task',
+      description: 'This is a test task',
+      completed: false,
+    });
+
+    await service.deleteTask(newTask.id);
+
+    await expect(service.getTaskById(newTask.id)).resolves.toBeNull();
+  });
 });

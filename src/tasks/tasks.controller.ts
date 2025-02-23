@@ -16,6 +16,11 @@ import { UpdateTaskDto } from './dtos/update-task.dto';
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
+  @Get(':id')
+  async getTaskById(@Param('id') id: string) {
+    return this.tasksService.getTaskById(id);
+  }
+
   @Get()
   getAllTasks(
     @Query('completed') completed?: boolean,
